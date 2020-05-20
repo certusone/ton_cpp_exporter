@@ -2,7 +2,7 @@
 
 node_exporter textfile collector for the TON C++ node implementation.
 
-![image](https://user-images.githubusercontent.com/859697/81930178-82585600-95e8-11ea-923f-eae42452c5f4.png) 
+![image](https://user-images.githubusercontent.com/859697/82453550-f4c9aa00-9ab0-11ea-9ae6-8cb63032e6af.png)
 
 ## Example queries
     
