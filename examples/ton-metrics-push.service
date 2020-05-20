@@ -1,0 +1,14 @@
+[Service]
+Type=oneshot
+User=ton
+ExecStart=/opt/bin/ton_metrics_push \
+  --output /run/node_exporter/collector \
+  --engine-console-binary /opt/ton/main.ton.dev/ton/build/validator-engine-console/validator-engine-console \
+  --lite-client-binary /opt/ton/main.ton.dev/ton/build/lite-client/lite-client \
+  --validator-client-key /opt/ton/keys/client \
+  --validator-server-pub /opt/ton/keys/server.pub \
+  --liteserver-pub /opt/ton/keys/liteserver.pub \
+  --wallet-address 0x<your multisig wallet address> \
+  --election-dir /opt/ton/keys/elections
+TimeoutStartSec=1s
+TimeoutStopSec=1s
