@@ -1,0 +1,76 @@
+- name: ton
+  rules:
+  - labels:
+      severity: paging
+    annotations:
+      summary: Master chain wallclock on {{ $labels.instance }} has been behind {{
+        $value }}s (>60s) for 10 minutes
+    alert: TonMasterChainClockBehind
+    expr: ton_unixtime - ton_masterchainblocktime > 60
+    for: 10m
+  - labels:
+      severity: paging
+    annotations:
+      summary: Master chain wallclock on {{ $labels.instance }} has been behind progressing
+        at {{ $value }} tick/s for 10 minutes
+    alert: TonMasterChainClockStuck
+    expr: rate(ton_masterchainblocktime[5m]) < 0.8
+    for: 10m
+  - labels:
+      severity: paging
+    annotations:
+      summary: node_exporter {{ $labels.instance }} is not exporting ton textfile
+        metrics (ton-metrics-push.service broken?)
+    alert: TonMetricsMissing
+    expr: up{job="node_exporter", instance=~".+\\.ton\\.example\\.com:.+$"} == 1 unless
+      on(instance) ton_masterchainblocktime
+    for: 3m
+  - labels:
+      severity: info
+    annotations:
+      summary: '{{ $labels.instance }} is not exporting validator metrics (not a validator?)'
+    alert: TonValidatorMissing
+    expr: up{job="node_exporter", instance=~".+\\.ton\\.example\\.com:.+$"} == 1 unless
+      on(instance) ton_validator_election_date
+    for: 3m
+  - labels:
+      severity: info
+    annotations:
+      summary: Validator on {{ $labels.instance }} did not participate in running
+        election
+    alert: TonElectionNewValidatorMissing
+    expr: count by (instance) (ton_validator_election_date <= on(instance) group_left()
+      ton_election_active_id) != 2
+    for: 30m
+  - labels:
+      severity: paging
+    annotations:
+      summary: No validator on {{ $labels.instance }} is in the active validator set
+    alert: TonNoActiveValidator
+    expr: sum by (instance) (ton_validator_is_active) != 1
+    for: 30m
+  - labels:
+      severity: paging
+    annotations:
+      summary: 'Validator work rate on {{ $labels.instance }} is low: {{ $value }}
+        < 0.005'
+    alert: TonSlowMCWorkRate
+    expr: rate(ton_validator_stats_mc_total[5m]) < 0.005
+    for: 1h
+  - labels:
+      severity: info
+    annotations:
+      summary: 'Validator work rate on {{ $labels.instance }} is low: {{ $value }}
+        < 0.03'
+    alert: TonSlowShardWorkRate
+    expr: rate(ton_validator_stats_shard_total[5m]) < 0.03
+    for: 1h
+  - labels:
+      severity: paging
+    annotations:
+      summary: Validator {{ $labels.instance }} has not participated in the current
+        election
+    alert: TonNoElectionParticipation
+    expr: ((ton_election_active_id > bool 0) and on (instance) (ton_election_participated
+      == 0)) == 1
+    for: 1h
