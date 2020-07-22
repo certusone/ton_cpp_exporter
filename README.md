@@ -1,3 +1,5 @@
+⚠️ **UNMAINTAINED**: We're no longer using the code - feel free to fork it and take over maintenance.
+
 # ton_cpp_exporter
 
 node_exporter textfile collector for the TON C++ node implementation.
